@@ -1,0 +1,94 @@
+{
+  "name": "JONAH WILLIAMS",
+  "contact": "Canberra, ACT  ·  0435 018 197  ·  jonahwilliams13@gmail.com  ·  linkedin.com/in/jonah-williams",
+  "sections": [
+    {
+      "type": "prose",
+      "heading": "Profile",
+      "after": 60,
+      "text": "Operations executive with close to ten years in enterprise technology, most recently as Chief Operations Officer of a Canberra consulting firm that grew from roughly $1M to more than $10M in revenue and from five staff to thirty. My work sits where commercial ownership meets data. I have built an enterprise Power BI reporting layer from the data model up, written the governance and risk frameworks that held delivery together through fast growth, and carried senior client relationships across federal government and the private sector. I am looking for senior advisory and specialist consulting engagements where a client needs someone who can read the business and the data at the same time."
+    },
+    {
+      "type": "grid",
+      "heading": "Where I add value on client engagements",
+      "rows": [
+        ["Data and analytics", "Power BI architecture, data modelling, DAX, API integration, executive and board reporting packs"],
+        ["Governance", "Operational standards, compliance frameworks, risk protocols, delivery assurance"],
+        ["Digital and process", "Workflow design and automation, SharePoint based tracking, systems that replace manual reporting"],
+        ["Client leadership", "Federal and enterprise stakeholder management, executive roadmapping, account retention"],
+        ["Commercial", "Go to market strategy, brand and positioning, capacity and resource planning"]
+      ]
+    },
+    {
+      "type": "experience",
+      "heading": "Experience",
+      "roles": [
+        {
+          "title": "Chief Operations Officer",
+          "org": "Onneer",
+          "dates": "Jul 2023 – Aug 2026",
+          "subline": "Canberra, ACT  ·  Specialised GIS and ArcGIS consulting",
+          "bullets": [
+            "Held full operational accountability for the firm after two years running its sales and marketing function. Revenue grew from about $1M to more than $10M across the two roles, with headcount going from around five to thirty.",
+            "Built the enterprise reporting layer myself, from the relationship model and solution architecture through the API integrations to every measure and visual. It reported down to individual staff level and became the basis for board decisions, resourcing calls and annual financial planning.",
+            "Extended that architecture into capacity planning, delivery efficiency, project completion and margin dashboards, then into reporting packs written for specific clients and projects.",
+            "Set the operational standards, compliance frameworks and risk protocols the business ran on, and built SharePoint workflow tracking so delivery followed one consistent process instead of thirty personal ones.",
+            "Positioned the brand in a way that held the firm's largest client relationship at a point where the client could reasonably have moved to a larger supplier.",
+            "Co-led recruitment and workforce planning through the whole growth cycle. Fewer than five people resigned voluntarily across that period."
+          ]
+        },
+        {
+          "title": "Business Manager",
+          "org": "Onneer",
+          "dates": "Apr 2021 – Jul 2023",
+          "bullets": [
+            "Owned sales and marketing, building the go to market approach and market presence that moved a five person firm into contention as an enterprise supplier.",
+            "Started the reporting function that later became the company's business intelligence layer."
+          ]
+        },
+        {
+          "title": "Senior Business Development Manager",
+          "org": "Esri Australia",
+          "dates": "Jul 2019 – Mar 2021",
+          "subline": "Canberra, ACT  ·  Enterprise GIS software and consulting",
+          "bullets": [
+            "Ran the major account portfolio across 13 federal government departments, advising at executive level on enterprise technology adoption and implementation.",
+            "Designed enterprise solutions that combined software integration, advisory consulting and capability training rather than licence sales alone.",
+            "Used executive roadmapping and sustained stakeholder engagement to support platform adoption, account expansion and multi-year retention."
+          ]
+        },
+        {
+          "title": "Regional Sales Manager, Northern and Eastern Australia",
+          "org": "Airbus Defence and Space",
+          "dates": "Dec 2017 – Jun 2019",
+          "subline": "Canberra, ACT  ·  Satellite imagery and geospatial intelligence",
+          "bullets": [
+            "Owned the commercial territory for satellite imagery across Northern and Eastern Australia, selling into a broad spread of commercial sectors."
+          ]
+        },
+        {
+          "title": "Customer Service and Account Manager",
+          "org": "Airbus Defence and Space",
+          "dates": "Nov 2016 – Dec 2017",
+          "bullets": [
+            "Managed high value key accounts, covering delivery operations, client satisfaction and contract fulfilment for specialised data products."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "entries",
+      "heading": "Education",
+      "entries": [
+        { "bold": "Bachelor of Interdisciplinary Studies (Sustainability)", "rest": ", Australian National University", "right": "2016" },
+        { "bold": "Diploma of Spatial Information Services", "rest": ", Canberra Institute of Technology", "right": "2016" }
+      ]
+    },
+    {
+      "type": "prose",
+      "heading": "Availability",
+      "after": 0,
+      "text": "Available now for senior advisory, interim and project based engagements. Based in Canberra and comfortable working with Sydney and interstate clients, on site or remote."
+    }
+  ]
+}
