@@ -661,6 +661,9 @@ The game layer is a skin, never a simulation. Each element maps to exactly one r
 | **The Sceptic** | Challenger role (a different model) | Never competes and earns nothing. |
 | **Warden / Scribe** | Censor / citation verifier | |
 | **Council chamber + petition cards** | Forum decision cards | Seal = approval bound to the payload hash. |
+| **Small figures on the map** | Agent missions this turn | One figure per mission. Moving = running, still = finished, a "?" bubble = outcome unknown, "waiting on you" = blocked on a Chairman decision. |
+| **Pipelines and carriers** | Evidence flowing to the evidence store; budget flowing out to missions; live challenges | Animated only while the underlying records are moving. |
+| **Territory colour strength and the control bar** | Guild standing: Gate checks passed, then verified evidence | Shows which guild is ahead in real evidence, not a made-up score. |
 | **End Turn** | Advance the turn | Shows the dispatch preview first: missions, worst-case reservation, petitions carrying over. |
 | **Chronicle** | `audit_events` | |
 | **Guild attributes** | Measured metrics only | Scroll accuracy = % citations verified. Paid-sign focus = share of behavioural evidence. Thrift = budget left. Originality = 1 − nearest cross-guild similarity. Each attribute is shown separately, never summed. |
@@ -671,6 +674,8 @@ The game layer is a skin, never a simulation. Each element maps to exactly one r
 
 ## 23.2 Game-design guardrails
 
+- **Plain words first.** Themed names (Colosseum, Council, Athenaeum) are allowed as titles only, and always with a plain label underneath ("Challenges", "Decisions", "Evidence"). Money, evidence, risk and approvals are always called exactly that: "A$0.70 reserved", "evidence item", "known risk", "approve". Never "gold", "scrolls", "scars" or "seals" in place of the real term.
+- **Every action states its real-world effect.** Any button that spends money, contacts people, publishes or changes permissions shows an "In the real world" line before it is pressed (e.g. "Up to A$0.70 of real money is reserved for AI usage", "Tests may contact real people").
 - **No fake progress.** No XP, levels or loot that aren't one of the real objects above. No random rewards.
 - **No pressure to spend.** No timers, streaks, "almost there" nudges, or rewards for releasing tranches. Ending a season early with the gold kept must be presented as a win (e.g. "Season ended well").
 - **Real numbers on every surface.** Game framing sits next to the true figure, never instead of it. A provenance badge (observed / calculated / estimate / fixture) is available on hover or long-press.
@@ -682,7 +687,7 @@ The game layer is a skin, never a simulation. Each element maps to exactly one r
 
 Global HUD on every screen: crest + season/turn · resource bar (gold, escrow, hourglass, scrolls, lands at gate) · Halt · screen tabs · demo-realm banner when fixture data is visible.
 
-1. **World map** (home): lands with guild banners and seal counts, ruins, fog, the Colosseum and Gate A drawn on the map. Guild roster on the left. Main quest ("Reach Gate A") with objectives, plus petitions and deeds on the right. Chronicle and the End Turn button at the bottom.
+1. **World map** (home): guild territories tinted by standing, with small figures working on their missions. Pipelines carry evidence in and budget out between each territory and the central buildings (Challenges, Evidence, Budget, Decisions). Rejected ideas, locked areas and Gate A are drawn on the map, with a "who controls the map" bar above it. Guild roster on the left. Main quest ("Reach Gate A") with objectives, plus petitions and deeds on the right. Chronicle and the End Turn button at the bottom.
 2. **Colosseum:** a turn-by-turn duel between a champion and the Sceptic. Strike and parry cards, BLOCKED / CONCEDED stamps, a blocks/scars tally, and a verdict screen.
 3. **Council chamber:** the selected petition as a large card, with your hand of petitions fanned below. Seal / return / decline, with a stamp animation and a chronicle confirmation. Gate cards stay chained until their turn.
 4. **Pantheon:** character-select screen with a large portrait, measured attributes, deeds, scars and loadout (strategy version, model, caps). Dormant guilds are greyed out.
