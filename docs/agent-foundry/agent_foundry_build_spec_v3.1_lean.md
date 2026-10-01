@@ -646,54 +646,54 @@ Agent Foundry is a **video game** played on top of an audit-grade control plane.
 
 The game layer is a skin, never a simulation. Each element maps to exactly one real record and shows its real value:
 
-| Game element | Real object | Notes |
+| Game element (plain label shown) | Real object | Notes |
 |---|---|---|
-| **Gold** | A$ in the released tranche | 1 gold = A$1. Never a separate in-game currency. |
-| **Escrow** | Reservations | Shown separately from spent gold. |
-| **Vaults I / II / III** | Tranches T0 / T1 / T2 | Locked vaults are drawn chained, with the gate that breaks the chains. |
-| **Hourglass** | Chairman attention budget (minutes) | Real minutes logged on Forum cards. |
-| **Scrolls** | `evidence` rows | Only tools create scrolls. Cursed scroll = quarantined. Torn quote = rejected citation. |
-| **Seals** | Gate A thresholds | 3 seals: ≥5 items, ≥3 domains, ≥2 behavioural signals. A 4th marker: survived the duel. |
-| **World map / lands** | Opportunities | Each champion is a land claimed by its guild's banner. |
-| **Ruins** | Rejected alternatives | Kept on the map and in the Codex, never deleted. |
-| **Fog of war** | Unexplored or locked scope | The Season 0 lands beyond Gate A stay fogged until Gate A passes. |
-| **Colosseum duel** | Cross-examination | Strike = challenge. Parry = rebuttal citing evidence IDs. Blocked = answered with a verified citation. **Scar** = conceded challenge, carried forward as an open risk. |
-| **The Sceptic** | Challenger role (a different model) | Never competes and earns nothing. |
-| **Warden / Scribe** | Censor / citation verifier | |
-| **Council chamber + petition cards** | Forum decision cards | Seal = approval bound to the payload hash. |
+| **Coin counter** ("Budget left A$5.48 of 20") | A$ in the released tranche | Always shown in A$. Never a separate in-game currency. |
+| **Reserved** ("Reserved for running tasks") | Reservations | Shown separately from money spent. |
+| **Locked chests** ("Stage 2 · real-world tests · locked") | Tranches T0 / T1 / T2 | A locked tranche is drawn chained, with the rule that unlocks it. |
+| **Hourglass** ("Your time left this turn") | Chairman attention budget (minutes) | Real minutes logged on decision cards. |
+| **Evidence items** | `evidence` rows | Only tools create them. "Blocked source" = quarantined. "Quote not found" = rejected citation. |
+| **Gate A checks** (4 boxes) | Gate A thresholds | ≥5 evidence items, ≥3 separate sources, ≥2 signs people pay, survived its challenge. |
+| **World map / territories** | Opportunities | Each guild's best idea is a territory under that guild's banner. |
+| **Rejected ideas** | Rejected alternatives | Kept on file, never deleted. |
+| **Locked area** | Out-of-scope or locked stages | The Stage 2 area stays locked until Gate A passes. |
+| **Colosseum ("Challenges")** | Cross-examination | Challenge card vs response card citing evidence IDs. ANSWERED = answered with a checked quote. STILL OPEN = carried forward as a known risk. |
+| **Challenger AI** | Challenger role (a different model) | Doesn't compete and earns nothing. |
+| **Compliance check / quote checker** | Censor / citation verifier | |
+| **Council ("Decisions") + decision cards** | Forum decision cards | Approval covers exactly the payload on the card (hash-bound). |
 | **Small figures on the map** | Agent missions this turn | One figure per mission. Moving = running, still = finished, a "?" bubble = outcome unknown, "waiting on you" = blocked on a Chairman decision. |
 | **Pipelines and carriers** | Evidence flowing to the evidence store; budget flowing out to missions; live challenges | Animated only while the underlying records are moving. |
 | **Territory colour strength and the control bar** | Guild standing: Gate checks passed, then verified evidence | Shows which guild is ahead in real evidence, not a made-up score. |
-| **End Turn** | Advance the turn | Shows the dispatch preview first: missions, worst-case reservation, petitions carrying over. |
-| **Chronicle** | `audit_events` | |
-| **Guild attributes** | Measured metrics only | Scroll accuracy = % citations verified. Paid-sign focus = share of behavioural evidence. Thrift = budget left. Originality = 1 − nearest cross-guild similarity. Each attribute is shown separately, never summed. |
-| **Deeds / scars** | Derived from real events | An unearned deed is a bug. |
-| **Gate judgment screen** | Gate A/B/C outcome | End-of-round results: verdict stamps per land, season tally, candidate lessons, the Chairman's choice. |
-| **Lessons inscribed** | Candidate strategy patches | |
-| **Halt** | Global kill switch | |
+| **End Turn** | Advance the turn | Shows a preview first: AI tasks to start, worst-case money reserved, decisions carrying over. |
+| **Activity log** | `audit_events` | |
+| **Guild stats** | Measured metrics only | Quote accuracy = % citations confirmed. Proof people pay = share of behavioural evidence. Budget left. Originality = 1 − nearest cross-guild similarity. Each stat is shown separately, never summed. |
+| **Strengths / weaknesses shown** | Derived from real events | An unearned badge is a bug. |
+| **Gate A results screen** | Gate A/B/C outcome | End-of-round results: outcome stamp per idea, season tally, proposed lessons, the Chairman's choice. |
+| **What the guilds learned** | Candidate strategy patches | |
+| **Stop all** | Global kill switch | |
 
 ## 23.2 Game-design guardrails
 
 - **Plain words first.** Themed names (Colosseum, Council, Athenaeum) are allowed as titles only, and always with a plain label underneath ("Challenges", "Decisions", "Evidence"). Money, evidence, risk and approvals are always called exactly that: "A$0.70 reserved", "evidence item", "known risk", "approve". Never "gold", "scrolls", "scars" or "seals" in place of the real term.
 - **Every action states its real-world effect.** Any button that spends money, contacts people, publishes or changes permissions shows an "In the real world" line before it is pressed (e.g. "Up to A$0.70 of real money is reserved for AI usage", "Tests may contact real people").
 - **No fake progress.** No XP, levels or loot that aren't one of the real objects above. No random rewards.
-- **No pressure to spend.** No timers, streaks, "almost there" nudges, or rewards for releasing tranches. Ending a season early with the gold kept must be presented as a win (e.g. "Season ended well").
+- **No pressure to spend.** No timers, streaks, "almost there" nudges, or rewards for releasing tranches. Ending a season early with the money kept must be presented as a success (e.g. "Season closed: clear answer for A$17.80").
 - **Real numbers on every surface.** Game framing sits next to the true figure, never instead of it. A provenance badge (observed / calculated / estimate / fixture) is available on hover or long-press.
-- **Agents never see the game.** Ranks, deeds, scars and attributes are UI only. They are never put into guild prompts (§5.2).
+- **Agents never see the game.** Ranks, strengths, weaknesses and stats are UI only. They are never put into guild prompts (§5.2).
 - **Juice with restraint.** Animations, stamps, glows and optional sound (off by default) give feedback on real events only. Respect `prefers-reduced-motion`.
 - **Accessible.** Real buttons and links, 44 px touch targets, a text label next to every icon, no meaning conveyed by colour alone.
 
 ## 23.3 Screens (Season −1)
 
-Global HUD on every screen: crest + season/turn · resource bar (gold, escrow, hourglass, scrolls, lands at gate) · Halt · screen tabs · demo-realm banner when fixture data is visible.
+Global header on every screen: crest + season/turn · resource bar (budget left, reserved, your time left, evidence collected, ideas ready for Gate A) · Stop all · screen tabs (Map, Challenges, Decisions, Guilds, Evidence, Budget, Gate A) · demo-data banner when fixture data is visible.
 
-1. **World map** (home): guild territories tinted by standing, with small figures working on their missions. Pipelines carry evidence in and budget out between each territory and the central buildings (Challenges, Evidence, Budget, Decisions). Rejected ideas, locked areas and Gate A are drawn on the map, with a "who controls the map" bar above it. Guild roster on the left. Main quest ("Reach Gate A") with objectives, plus petitions and deeds on the right. Chronicle and the End Turn button at the bottom.
-2. **Colosseum:** a turn-by-turn duel between a champion and the Sceptic. Strike and parry cards, BLOCKED / CONCEDED stamps, a blocks/scars tally, and a verdict screen.
-3. **Council chamber:** the selected petition as a large card, with your hand of petitions fanned below. Seal / return / decline, with a stamp animation and a chronicle confirmation. Gate cards stay chained until their turn.
-4. **Pantheon:** character-select screen with a large portrait, measured attributes, deeds, scars and loadout (strategy version, model, caps). Dormant guilds are greyed out.
-5. **Codex:** a list of scrolls, the open scroll as parchment with the verified quote highlighted, and wards (cursed scrolls, torn quotes).
-6. **Vault:** open and chained vaults, a coin ledger including "spell vanished mid-cast" (uncertain) items, oracle fees per model, and the Halt control.
-7. **Gate judgment:** the end-of-round results screen.
+1. **World map** (home): guild territories tinted by standing, with small figures working on their missions. Pipelines carry evidence in and budget out between each territory and the central buildings (Challenges, Evidence, Budget, Decisions). Rejected ideas, locked areas and Gate A are drawn on the map, with a "who controls the map" bar above it. Guild standings on the left. On the right: the selected idea (with an "In the real world" line), the round goal ("Reach Gate A") with objectives, decisions waiting, and achievements. Activity log and the End Turn button at the bottom.
+2. **Challenges (Colosseum):** a round-by-round duel between a guild's best idea and the challenger AI. Challenge and response cards, ANSWERED / STILL OPEN stamps, an answered / still-open tally, and a result screen.
+3. **Decisions (Council):** the selected decision as a large card with an "In the real world" box, and your other decisions fanned below as a hand of cards. Approve / send back / decline, with a stamp animation and an activity-log confirmation. Gate cards stay locked until their turn.
+4. **Guilds (Pantheon):** character-select screen with a large portrait, measured stats, strengths and weaknesses shown, and setup (strategy version, model, spending caps, what it can and can't do). Dormant guilds are greyed out.
+5. **Evidence (Athenaeum):** a list of evidence items, the selected item shown as a parchment page with the confirmed quote highlighted, and the problems caught (blocked sources, quotes not found).
+6. **Budget:** the open stage and the locked stages, a spending record that includes "result unknown" items, AI model costs, and the Stop control.
+7. **Gate A results:** the end-of-round results screen.
 
 Season 0 adds (same rules): **Agora** (trials as expeditions, with the locked-plan hash visible), **Forge and Arsenal** (crafting queue, QA as trials of quality, capabilities as unlocked tools), and fog lifting from the lands beyond Gate A. Senate, Elysium and Underworld appear only as locked, fogged landmarks.
 
