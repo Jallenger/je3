@@ -27,6 +27,7 @@
 | Experiments | Criteria stated | Criteria are hash-locked when approved and can't be edited afterwards | Stops goalposts moving. |
 | Outcome classification | Partly judgement-based | Rule-based, from the locked plan and execution record | Deterministic and auditable. |
 | Security | Implied | Explicit threat model: prompt injection, untrusted content, kill switch | Agents read the open web and hold spend permissions. |
+| Presentation | "Strategy game" in name, but dashboard-like screens | A real game layer (§23): world map, duels, petition cards, vaults, end-of-round judgment. Every game element maps 1:1 to a real record. | It's meant to be a game. The mapping rule stops the game from hiding or distorting real money and evidence. |
 | Human dependencies | "No hidden human dependency" | Adds a **disclosed standing dependency** register (KYC accounts, merchant-of-record, legal liability) | Payment, ad and marketplace accounts legally need a real person. |
 | Chairman time | Unbudgeted | Attention budget per turn, with decisions batched | Stops governance becoming the routine labour the spec forbids. |
 | Stack | Next.js + FastAPI + Postgres + Redis + Celery + MinIO | One TypeScript app + Postgres only | Half the moving parts, one language. |
@@ -637,27 +638,61 @@ No guild can alter its own audit history, Constitution, budget ceiling, lifecycl
 
 ---
 
-# 23. UI
+# 23. GAME LAYER AND UI
 
-A turn-based strategy game skin over an audit-grade control plane. The reference mockup accompanies this spec.
+Agent Foundry is a **video game** played on top of an audit-grade control plane. It must feel like a turn-based strategy game (think a 4X map, a card battler and an RPG party screen), not an admin dashboard. The reference mockup that accompanies this spec is the visual target.
 
-**Global chrome (every screen):** Season/Turn, tranche meter (released / reserved / settled / remaining, with locked tranches greyed out), kill switch, Chairman attention meter, demo-data banner whenever fixture data is visible.
+## 23.1 The one rule: every game element is a real object
 
-**Screens (Season 0):**
+The game layer is a skin, never a simulation. Each element maps to exactly one real record and shows its real value:
 
-1. **Command Centre:** what happened this turn, spend vs reserved, what was learned, next gate and what it would release, decisions waiting.
-2. **Tournament (Colosseum):** bracket view, 15 → 5 champions → challenged → Gate A, with each card's evidence strength by signal type.
-3. **Pantheon:** guild cards: doctrine, status, active strategy version, budget, opportunities, outcome history, diversity position.
-4. **Athenaeum:** evidence browser: snapshots, signal types, citations, quarantines, claims and contradictions, search.
-5. **Forum:** batched decision cards: question, evidence for/against, Challenger dissent, capital at risk, read-time estimate, approve / revise / reject.
-6. **Treasury:** tranches, ledger, reservations, uncertain items, per-call model costs, FX.
-7. **Agora** (Season 0 onward): experiments with locked-plan hash, live metrics with provenance badges, stop conditions.
-8. **Forge and Arsenal** (Season 0 onward): build queue, QA results, capabilities.
-9. **Archives:** immutable audit feed and career events.
+| Game element | Real object | Notes |
+|---|---|---|
+| **Gold** | A$ in the released tranche | 1 gold = A$1. Never a separate in-game currency. |
+| **Escrow** | Reservations | Shown separately from spent gold. |
+| **Vaults I / II / III** | Tranches T0 / T1 / T2 | Locked vaults are drawn chained, with the gate that breaks the chains. |
+| **Hourglass** | Chairman attention budget (minutes) | Real minutes logged on Forum cards. |
+| **Scrolls** | `evidence` rows | Only tools create scrolls. Cursed scroll = quarantined. Torn quote = rejected citation. |
+| **Seals** | Gate A thresholds | 3 seals: ≥5 items, ≥3 domains, ≥2 behavioural signals. A 4th marker: survived the duel. |
+| **World map / lands** | Opportunities | Each champion is a land claimed by its guild's banner. |
+| **Ruins** | Rejected alternatives | Kept on the map and in the Codex, never deleted. |
+| **Fog of war** | Unexplored or locked scope | The Season 0 lands beyond Gate A stay fogged until Gate A passes. |
+| **Colosseum duel** | Cross-examination | Strike = challenge. Parry = rebuttal citing evidence IDs. Blocked = answered with a verified citation. **Scar** = conceded challenge, carried forward as an open risk. |
+| **The Sceptic** | Challenger role (a different model) | Never competes and earns nothing. |
+| **Warden / Scribe** | Censor / citation verifier | |
+| **Council chamber + petition cards** | Forum decision cards | Seal = approval bound to the payload hash. |
+| **End Turn** | Advance the turn | Shows the dispatch preview first: missions, worst-case reservation, petitions carrying over. |
+| **Chronicle** | `audit_events` | |
+| **Guild attributes** | Measured metrics only | Scroll accuracy = % citations verified. Paid-sign focus = share of behavioural evidence. Thrift = budget left. Originality = 1 − nearest cross-guild similarity. Each attribute is shown separately, never summed. |
+| **Deeds / scars** | Derived from real events | An unearned deed is a bug. |
+| **Gate judgment screen** | Gate A/B/C outcome | End-of-round results: verdict stamps per land, season tally, candidate lessons, the Chairman's choice. |
+| **Lessons inscribed** | Candidate strategy patches | |
+| **Halt** | Global kill switch | |
 
-Senate, Elysium and Underworld are deferred. Show them, at most, as locked tiles on a world map.
+## 23.2 Game-design guardrails
 
-Usable at mobile width. Every number shows its provenance badge: observed, calculated, estimate or fixture.
+- **No fake progress.** No XP, levels or loot that aren't one of the real objects above. No random rewards.
+- **No pressure to spend.** No timers, streaks, "almost there" nudges, or rewards for releasing tranches. Ending a season early with the gold kept must be presented as a win (e.g. "Season ended well").
+- **Real numbers on every surface.** Game framing sits next to the true figure, never instead of it. A provenance badge (observed / calculated / estimate / fixture) is available on hover or long-press.
+- **Agents never see the game.** Ranks, deeds, scars and attributes are UI only. They are never put into guild prompts (§5.2).
+- **Juice with restraint.** Animations, stamps, glows and optional sound (off by default) give feedback on real events only. Respect `prefers-reduced-motion`.
+- **Accessible.** Real buttons and links, 44 px touch targets, a text label next to every icon, no meaning conveyed by colour alone.
+
+## 23.3 Screens (Season −1)
+
+Global HUD on every screen: crest + season/turn · resource bar (gold, escrow, hourglass, scrolls, lands at gate) · Halt · screen tabs · demo-realm banner when fixture data is visible.
+
+1. **World map** (home): lands with guild banners and seal counts, ruins, fog, the Colosseum and Gate A drawn on the map. Guild roster on the left. Main quest ("Reach Gate A") with objectives, plus petitions and deeds on the right. Chronicle and the End Turn button at the bottom.
+2. **Colosseum:** a turn-by-turn duel between a champion and the Sceptic. Strike and parry cards, BLOCKED / CONCEDED stamps, a blocks/scars tally, and a verdict screen.
+3. **Council chamber:** the selected petition as a large card, with your hand of petitions fanned below. Seal / return / decline, with a stamp animation and a chronicle confirmation. Gate cards stay chained until their turn.
+4. **Pantheon:** character-select screen with a large portrait, measured attributes, deeds, scars and loadout (strategy version, model, caps). Dormant guilds are greyed out.
+5. **Codex:** a list of scrolls, the open scroll as parchment with the verified quote highlighted, and wards (cursed scrolls, torn quotes).
+6. **Vault:** open and chained vaults, a coin ledger including "spell vanished mid-cast" (uncertain) items, oracle fees per model, and the Halt control.
+7. **Gate judgment:** the end-of-round results screen.
+
+Season 0 adds (same rules): **Agora** (trials as expeditions, with the locked-plan hash visible), **Forge and Arsenal** (crafting queue, QA as trials of quality, capabilities as unlocked tools), and fog lifting from the lands beyond Gate A. Senate, Elysium and Underworld appear only as locked, fogged landmarks.
+
+Usable at phone width: the map collapses to a list of lands, and the Council works one card at a time.
 
 ---
 
@@ -754,7 +789,13 @@ Support cases, refunds, withdrawal states, contribution economics, reflection �
 - A candidate strategy patch does not change retrieved guidance until it is activated.
 - Forum batching keeps a turn's estimated read time within the attention budget, or proposes deferrals.
 
-**UI**
+**UI / game layer**
+- Every game element in §23.1 reads from its real record. Changing the record changes the element (fixture test per row).
+- No game element exists without a real record behind it (lint: the UI's resource and badge components accept only typed record references).
+- Guild prompts contain no rank, deed, scar or attribute text (prompt snapshot test).
+- End Turn shows a dispatch preview (missions, worst-case reservation, carried-over petitions) before advancing.
+- Ending a season at a gate with gold unspent renders as a success state.
+- All animations stop under `prefers-reduced-motion`.
 - Every number shows a provenance badge. Fixture data shows a persistent banner.
 - The Command Centre answers: what happened, what was spent/reserved, what was learned, what remains, what needs the Chairman, and what the next gate would release.
 - All Season −1 screens are usable at 375 px width.
@@ -763,7 +804,7 @@ Support cases, refunds, withdrawal states, contribution economics, reflection �
 
 # 27. DEFINITION OF DONE
 
-**Season −1 done** when the Chairman can: seed the season with T0 = A$20 · watch 5 guilds explore with live cost metering · inspect every claim's captured evidence · see rejected alternatives and the diversity report · watch cross-examination by a different model · review side-by-side scorecards · make the Gate A decision in ≤ 20 minutes · receive a Discovery Report · finish having spent ≤ A$20, with every cent reconciled.
+**Season −1 done** when the Chairman can play Season −1 as a game, end to end: seed the season with T0 = A$20 · watch 5 guilds explore with live cost metering · inspect every claim's captured evidence · see rejected alternatives and the diversity report · watch cross-examination by a different model · review side-by-side scorecards · make the Gate A decision in ≤ 20 minutes · receive a Discovery Report · finish having spent ≤ A$20, with every cent reconciled.
 
 **Season 0 done** when, additionally, the Chairman can: approve a locked falsification plan · see it closed and classified by rule · compare ≥ 2 offering forms · approve a capability grant · see QA block or pass a release · approve a version-specific launch (real or manual handoff) · see observed or labelled metrics roll into contribution profit · see support/defect handling · see a reflection produce a candidate strategy patch · close the season at Gate C, even if nothing deserves more capital.
 
