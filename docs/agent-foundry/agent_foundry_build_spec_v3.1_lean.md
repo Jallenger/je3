@@ -27,6 +27,7 @@
 | Experiments | Criteria stated | Criteria are hash-locked when approved and can't be edited afterwards | Stops goalposts moving. |
 | Outcome classification | Partly judgement-based | Rule-based, from the locked plan and execution record | Deterministic and auditable. |
 | Security | Implied | Explicit threat model: prompt injection, untrusted content, kill switch | Agents read the open web and hold spend permissions. |
+| Real money | Implied by the ledger | §14A: the Chairman keeps custody; separate rails (AI credits, an experiment card, merchant-of-record revenue), each with an external hard cap; funding checklist; manual purchase handoff; daily/monthly reconciliation | A ledger alone can't stop a real charge. External caps make overspending impossible even if the software is wrong. |
 | Presentation | "Strategy game" in name, but dashboard-like screens | A real game layer (§23): world map, duels, petition cards, vaults, end-of-round judgment. Every game element maps 1:1 to a real record. | It's meant to be a game. The mapping rule stops the game from hiding or distorting real money and evidence. |
 | Human dependencies | "No hidden human dependency" | Adds a **disclosed standing dependency** register (KYC accounts, merchant-of-record, legal liability) | Payment, ad and marketplace accounts legally need a real person. |
 | Chairman time | Unbudgeted | Attention budget per turn, with decisions batched | Stops governance becoming the routine labour the spec forbids. |
@@ -459,6 +460,99 @@ Balance states: `available · reserved · committed · settled · refunded/rever
 
 ---
 
+# 14A. FUNDING OPERATIONS: HOW REAL MONEY MOVES
+
+The Treasury in §14 is an **internal ledger**. It decides what the Foundry is *allowed* to spend. This section defines where the real money sits, how it reaches the services that charge it, and how the two are kept in agreement.
+
+## 14A.1 Principles
+
+1. **The Chairman keeps custody.** Real money stays in the Chairman's own accounts. The Foundry never holds bank logins, card numbers or payment credentials, and no agent can move money directly.
+2. **Two locks on every dollar.** Every spending rail has an **external hard cap** (a provider spend limit, or a card limit) set at or below the internal ledger's allowance. If the software has a bug, the outside world still can't charge more than the cap.
+3. **Fund in small top-ups, just in time.** Load only what the current tranche needs, when it is released. Prepaid credits may be non-refundable, so top up in small amounts (default A$5–10). When a rail's real balance falls below the next turn's worst-case reservations, the system raises a top-up decision card. It never assumes money is there.
+4. **Revenue doesn't refill the game automatically.** Sales are paid out to the Chairman. Reinvesting any of it is a new, explicit tranche decision.
+5. **Every real charge has a receipt in the ledger.** Every external debit is matched to a ledger entry, and every ledger entry that represents real money is matched to an external record.
+
+## 14A.2 The funding rails
+
+| Rail | What it pays for | How it's funded | External hard cap | Who executes | How it's reconciled |
+|---|---|---|---|---|---|
+| **R1 · AI provider account** | Model calls and web search (most of T0) | Prepaid credits on a dedicated Foundry account or workspace, bought by the Chairman | Workspace / account spend limit set to the tranche's inference allowance | The system, through the provider API key held server-side | Per call from `usage` · daily against the provider's usage/cost report · monthly against the card statement |
+| **R2 · Experiment card** | Domains, samples, listing fees, the occasional capped ad test (T1/T2) | A **separate virtual or prepaid card** with its own limit, never the Chairman's main card | Card limit = the tranche's external-cash allowance (e.g. A$15 for T1) | **Season 0: the Chairman**, via a manual handoff (§14A.4). Agents never see card details. | Receipt upload or emailed receipt → `ledger_entries` → monthly statement match |
+| **R3 · Revenue** | Customer payments | A **merchant-of-record** platform (takes on sales tax, consumer billing and refunds for a fee) that pays out to the Chairman's bank | Payout account owned by the Chairman | Platform → Chairman | Platform webhooks/API → `sales_events`, `refund_events` → payout statement match |
+| **R4 · Platform costs** | Hosting, the engineering tools used to build the Foundry | The Chairman's normal accounts | Not a tranche. Shown on Budget as "not part of this budget". | Chairman | Recorded for honesty only |
+
+The exact account features (spend limits, prepaid credits, virtual cards, usage reports) depend on the providers chosen. Before Season −1, the Chairman confirms each rail's cap actually exists and records it in the Standing Dependency Register (§6.1). A rail without a working external cap may not be used.
+
+## 14A.3 Tranche lifecycle
+
+```
+locked ──(gate passes + Chairman approves)──► released
+released ──(Chairman loads the rails; system verifies)──► funded
+funded ──(missions reserve, run, settle)──► in use
+in use ──(season or gate closes)──► closing ──(final reconciliation)──► closed
+```
+
+1. **Released.** The Chairman approves the gate decision. The ledger records `release` for the tranche amount, but nothing can be reserved yet.
+2. **Funded.** The system shows a **funding checklist** split by rail, for example T1: *buy A$5 of AI credits and set the workspace limit to A$5 · set experiment-card limit to A$15 · keep A$5 unallocated*. The Chairman ticks each item. Where an API allows it, the system verifies the external cap (e.g. reads the provider's current limit or balance). Unverifiable items require a screenshot or receipt upload. Reservations are allowed only once every rail for that tranche is confirmed.
+3. **In use.** Normal reserve → dispatch → settle (§14).
+4. **Closing.** No new reservations. Uncertain items must be resolved first.
+5. **Closed.** Final reconciliation per rail. Unspent internal allowance returns to the Chairman (not to guilds). The card limit is lowered back to A$0. Unused prepaid credits are recorded as **carried over** (an asset of the next tranche), never written off silently.
+
+## 14A.4 Manual handoff for external purchases (Season 0)
+
+Agents can *prepare* a purchase but never complete one:
+
+1. A mission produces a **purchase request**: merchant, item, exact price, currency, why, linked experiment plan, max amount, expiry.
+2. The Forum shows it as a decision card with an "In the real world" line ("Your experiment card will be charged up to A$12 by [merchant]").
+3. On approval, the system reserves the amount and shows the Chairman a **handoff card**: step-by-step instructions, with the payload hash on screen.
+4. The Chairman makes the purchase and uploads or forwards the receipt.
+5. The system matches the receipt to the reservation (amount, merchant, date) and settles. A mismatch above tolerance → `uncertain` + Forum card.
+6. Unclaimed handoffs expire. The reservation is released and the request is closed as `cancelled`.
+
+Owner minutes for each handoff are logged. Handoffs are governance, not routine fulfilment, and must stay rare. If they become frequent, that is a signal to automate the rail (Level 3, after Season 0), e.g. a card-issuing API with per-purchase single-use cards, behind the same approvals.
+
+## 14A.5 Currency and fees
+
+- Model and many tool charges are in **USD**. The ledger stores the original currency and amount, the AUD estimate at reservation (`usd_to_aud_estimate`), and the actual AUD from the statement.
+- Card foreign-transaction fees and FX differences are posted as `fx_adjustment` ledger entries during monthly reconciliation and count against the tranche that incurred them.
+- Prefer a card with no foreign-transaction fee for R1 and R2, or budget about 3% headroom.
+
+## 14A.6 Reconciliation cadence and tolerances
+
+| When | What | Tolerance | On breach |
+|---|---|---|---|
+| Every call | Reserved worst case vs settled `usage` × price | Settled ≤ reserved | Bug alert. Freeze that mission type. |
+| Daily | Ledger total for R1 vs provider usage/cost report | ±A$0.50 or ±5%, whichever is larger | Freeze new reservations. Forum card. |
+| On receipt | Handoff receipt vs reservation | Exact amount; same merchant | Mark `uncertain`. Forum card. |
+| Monthly | Every rail vs card / bank / payout statements | ±A$1.00 including FX | Freeze the tranche until the Chairman resolves it. |
+| Tranche close | All rails | Zero unexplained difference | Tranche can't close. |
+
+## 14A.7 Revenue and refunds
+
+- Sales and refunds arrive from the merchant-of-record platform as events, attached to the offering version (§19).
+- A **refund reserve** of a configurable share of recent revenue (default 20% of the last 30 days) is shown as committed, not available.
+- Revenue is reported as contribution profit. It becomes spendable only when the Chairman approves a new tranche funded from it. The system may suggest this ("A$38 of contribution this season; propose a T3 of A$20?"), but it never happens automatically.
+
+## 14A.8 Records and tax
+
+- Every real-money ledger entry links to its external record (provider invoice, receipt, payout statement). An export (CSV + receipt bundle) is available per season for the Chairman's bookkeeping.
+- The Foundry doesn't give tax advice. The Chairman confirms with an accountant how experiments, revenue and GST apply to their situation (e.g. business registration and GST thresholds in Australia).
+
+## 14A.9 Worked example: Season −1 and the start of Season 0
+
+| Step | Real-world action | Internal ledger |
+|---|---|---|
+| Start Season −1 | Chairman buys ≈ A$15.50 (US$10) of AI credits and sets the workspace limit to US$10. No card loaded. | T0 released A$20 → funded (R1 A$15.50 + A$4.50 unallocated reserve) |
+| Turns 2–4 | Nothing. The provider deducts usage from credits. | Reserve / settle per call. Daily check vs the usage report. |
+| Turn 5 | Credits fall below the next turn's worst case. A top-up card asks the Chairman to buy US$2 (≈ A$3.10) and raise the limit to match. | R1 funded total A$18.60 (still within T0's A$20) |
+| Turn 6, Gate A passes | Chairman approves T1 | T0 closing → closed: A$17.80 spent, A$2.20 returned (A$0.80 of it is unused credits, carried over to T1). |
+| Fund T1 | Top up ≈ A$4.20 of AI credits (A$5 less the A$0.80 carried over; limit raised to match) · set experiment card limit A$15 | T1 released A$25 → funded |
+| A test needs a domain | Handoff: Chairman buys the domain (A$14.20), uploads the receipt | Reserve A$15 → settle A$14.20 → release A$0.80 |
+| Month end | Statement shows A$14.62 (FX fee) | `fx_adjustment` A$0.42 against T1 |
+| Gate A fails instead | Nothing further is loaded | Season closes. Card stays at A$0. A$55 never leaves the Chairman. |
+
+---
+
 # 15. CAREER AND STRATEGY (SEASON 0 MINIMUM)
 
 Deferred to Season 1+: competence tiers, Council, Elysium, Founder, lineage scoring. Keep the data model able to add them, but build no UI and no rules for them now.
@@ -757,6 +851,13 @@ Support cases, refunds, withdrawal states, contribution economics, reflection �
 - An approval whose payload hash doesn't match the action is rejected.
 - The kill switch blocks every external adapter and cancels queued missions.
 - A locked tranche cannot be reserved against.
+- A released but not yet funded tranche cannot be reserved against. Reservations open only after every rail on the funding checklist is confirmed.
+- A purchase request can't complete without a Chairman approval and a matching receipt. A receipt mismatch produces `uncertain` and a Forum card.
+- The daily provider-usage check outside tolerance freezes new reservations.
+- An expired handoff releases its reservation.
+- Revenue events never increase any tranche's available balance without a Chairman tranche decision.
+- No agent context pack, log line or prompt contains card numbers, bank details or provider admin keys (secret-scan test).
+- A tranche can't close with an unexplained reconciliation difference.
 
 **Evidence**
 - A model output containing an uncited factual claim stores it as `hypothesis`.
@@ -797,9 +898,10 @@ Support cases, refunds, withdrawal states, contribution economics, reflection �
 **UI / game layer**
 - Every game element in §23.1 reads from its real record. Changing the record changes the element (fixture test per row).
 - No game element exists without a real record behind it (lint: the UI's resource and badge components accept only typed record references).
-- Guild prompts contain no rank, deed, scar or attribute text (prompt snapshot test).
-- End Turn shows a dispatch preview (missions, worst-case reservation, carried-over petitions) before advancing.
-- Ending a season at a gate with gold unspent renders as a success state.
+- Guild prompts contain no rank, strength/weakness or stat text (prompt snapshot test).
+- End Turn shows a preview (AI tasks to start, worst-case money reserved, decisions carrying over) before advancing.
+- Ending a season at a gate with money unspent renders as a success state.
+- Every action that spends money, contacts people, publishes or changes permissions shows an "In the real world" line before confirmation.
 - All animations stop under `prefers-reduced-motion`.
 - Every number shows a provenance badge. Fixture data shows a persistent banner.
 - The Command Centre answers: what happened, what was spent/reserved, what was learned, what remains, what needs the Chairman, and what the next gate would release.
@@ -827,6 +929,20 @@ tranches:
   t1_falsification_aud: 25
   t2_build_launch_aud: 30
   release_requires_gate: true
+
+funding:
+  require_funding_checklist: true      # reservations only after rails confirmed
+  rails:
+    ai_provider: { prepaid: true, external_cap_required: true, topup_increment_aud: 5 }
+    experiment_card: { separate_card: true, external_cap_required: true, executor: chairman_handoff }
+    revenue: { merchant_of_record: true, auto_reinvest: false }
+  handoff_expiry_hours: 72
+  reconciliation:
+    daily_tolerance_aud: 0.50
+    daily_tolerance_pct: 5
+    monthly_tolerance_aud: 1.00
+  refund_reserve_pct_of_30d_revenue: 20
+  fx_fee_headroom_pct: 3
 
 season_minus_1:
   active_guilds: [hermes, ariadne, hephaestus, mercury, prometheus]
